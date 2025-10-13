@@ -7,3 +7,5 @@ include/napi-inl.h
 include/node_api.h
 include/node_api_types.h
 .cache
+dist
+node_modules

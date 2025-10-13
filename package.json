@@ -1,7 +1,11 @@
 {
   "name": "nativefiledialog",
   "version": "1.0.0",
+  "main": "index.ts",
   "scripts": {
-    "install": "cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+    "install": "cmake -B build && cmake --build build --config Release"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2"
   }
 }
