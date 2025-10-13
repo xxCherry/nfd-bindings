@@ -7,6 +7,7 @@ project(nfd_bindings)
 set(CMAKE_CXX_STANDARD          26)
 set(CMAKE_CXX_EXTENSIONS        ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_CXX_OUTPUT_EXTENSION .node)
 
 set(NODE_DOWNLOAD_URL https://nodejs.org/dist/v24.10.0/win-x64/node.lib)
 set(NODE_API_INCLUDE_URL https://github.com/nodejs/node-api-headers/raw/refs/heads/main/include)
