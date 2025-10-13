@@ -19,7 +19,7 @@ FetchContent_Declare(nfd
 
 FetchContent_MakeAvailable(nfd)
 
-set(NODE_DOWNLOAD_URL https://nodejs.org/dist/v24.10.0/win-x64/node.lib)
+set(NODE_DOWNLOAD_URL https://nodejs.org/dist/v24.8.0/win-x64/node.lib)
 set(NODE_API_INCLUDE_URL https://github.com/nodejs/node-api-headers/raw/refs/heads/main/include)
 set(NODE_ADDON_API_INCLUDE_URL https://raw.githubusercontent.com/nodejs/node-addon-api/refs/heads/main/)
 
@@ -75,6 +75,10 @@ add_library(
   SHARED
   ${SOURCES}
 )
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  target_link_options(${PROJECT_NAME} PUBLIC "/DELAYLOAD:node.exe")
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     SUFFIX ".node"
