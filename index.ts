@@ -1,5 +1,8 @@
-let nfd = require("./dist/nfd_bindings.node");
-if (!nfd) {
+let nfd: any;
+
+try {
+  nfd = require("./dist/nfd_bindings.node");
+} catch {
   nfd = require("./dist/Release/nfd_bindings.node");
 }
 
