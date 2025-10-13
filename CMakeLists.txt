@@ -53,12 +53,14 @@ file(DOWNLOAD
 
 add_compile_definitions(NODE_ADDON_API_DISABLE_DEPRECATED)
 
-add_compile_options(
-  -Wall
-  -Wextra
-  -fno-rtti
-  -Wno-missing-designated-field-initializers
-)
+if (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
+  add_compile_options(
+    -Wall
+    -Wextra
+    -fno-rtti
+    -Wno-missing-designated-field-initializers
+  )
+endif()
 
 file(
   GLOB_RECURSE
