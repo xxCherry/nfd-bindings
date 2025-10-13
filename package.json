@@ -1,0 +1,7 @@
+{
+  "name": "my-addon",
+  "private": true,
+  "scripts": {
+    "install": "cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+  }
+}
