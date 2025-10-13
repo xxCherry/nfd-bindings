@@ -7,7 +7,15 @@ project(nfd_bindings)
 set(CMAKE_CXX_STANDARD          26)
 set(CMAKE_CXX_EXTENSIONS        ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-SET(CMAKE_CXX_OUTPUT_EXTENSION .node)
+
+Include(FetchContent)
+
+FetchContent_Declare(nfd
+  GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+  GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(nfd)
 
 set(NODE_DOWNLOAD_URL https://nodejs.org/dist/v24.10.0/win-x64/node.lib)
 set(NODE_API_INCLUDE_URL https://github.com/nodejs/node-api-headers/raw/refs/heads/main/include)
@@ -49,6 +57,7 @@ add_compile_options(
   -Wall
   -Wextra
   -fno-rtti
+  -Wno-missing-designated-field-initializers
 )
 
 file(
@@ -63,9 +72,13 @@ add_library(
   ${SOURCES}
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    SUFFIX ".node"
+)
+
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 target_link_directories(${PROJECT_NAME} PRIVATE lib)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE node.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE nfd node)
