@@ -1,6 +1,6 @@
 {
   "name": "nativefiledialog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.ts",
   "scripts": {
     "install": "cmake -B build && cmake --build build --config Release"

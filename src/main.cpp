@@ -58,6 +58,22 @@ Napi::Value open_dialog(const Napi::CallbackInfo &args) {
   }
 }
 
+Napi::Value open_folder_dialog(const Napi::CallbackInfo &args) {
+  const auto env = args.Env();
+
+  NFD::UniquePathN out_path;
+  const auto result = NFD::PickFolder(out_path);
+  if (result == NFD_OKAY) {
+    return Napi::String::From(env,
+                              reinterpret_cast<char16_t *>(out_path.get()));
+  } else if (result == NFD_CANCEL) {
+    return Napi::String::From(env, "");
+  } else {
+    Napi::Error::New(env, NFD_GetError()).ThrowAsJavaScriptException();
+    return env.Null();
+  }
+}
+
 } // namespace
 
 Napi::Object register_exports(Napi::Env env, Napi::Object exports) {
@@ -69,6 +85,7 @@ Napi::Object register_exports(Napi::Env env, Napi::Object exports) {
   };
 
   register_export("openDialog", open_dialog);
+  register_export("openFolderDialog", open_folder_dialog);
 
   return exports;
 }

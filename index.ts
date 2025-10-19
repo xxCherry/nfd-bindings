@@ -9,3 +9,7 @@ try {
 export function openDialog(filters: Record<string, string>): string {
   return nfd.openDialog(filters);
 }
+
+export function openFolderDialog(): string {
+  return nfd.openFolderDialog();
+}
