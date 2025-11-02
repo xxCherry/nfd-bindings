@@ -1,15 +1,21 @@
-let nfd: any;
+let binding: any;
 
-try {
-  nfd = require("./dist/nfd_bindings.node");
-} catch {
-  nfd = require("./dist/Release/nfd_bindings.node");
+if (process.platform == "win32") {
+  try {
+    binding = require("./dist/nfd_bindings.node");
+  } catch {
+    binding = require("./dist/Release/nfd_bindings.node");
+  }
+} else if (process.platform == "linux") {
+    binding = require("./dist/libnfd_bindings.node");
+} else {
+  throw new Error("Unsupported platform");
 }
 
 export function openDialog(filters: Record<string, string>): string {
-  return nfd.openDialog(filters);
+  return binding.openDialog(filters);
 }
 
 export function openFolderDialog(): string {
-  return nfd.openFolderDialog();
+  return binding.openFolderDialog();
 }

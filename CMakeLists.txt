@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS        ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
 
 Include(FetchContent)
 
@@ -25,9 +26,11 @@ set(NODE_ADDON_API_INCLUDE_URL https://raw.githubusercontent.com/nodejs/node-add
 
 # node headers download
 
-file(DOWNLOAD
-    ${NODE_DOWNLOAD_URL}
-    ${CMAKE_SOURCE_DIR}/lib/node.lib)
+if (WIN32)
+    file(DOWNLOAD
+        ${NODE_DOWNLOAD_URL}
+        ${CMAKE_SOURCE_DIR}/lib/node.lib)
+endif()
 
 file(DOWNLOAD
     ${NODE_API_INCLUDE_URL}/js_native_api.h
@@ -89,4 +92,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 target_link_directories(${PROJECT_NAME} PRIVATE lib)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE nfd node)
+target_link_libraries(${PROJECT_NAME} PRIVATE nfd)
+
+if (WIN32)
+  target_link_libraries(${PROJECT_NAME} PRIVATE node)
+endif()

@@ -1,3 +1,4 @@
+#include "nfd.h"
 #include <napi.h>
 #include <nfd.hpp>
 
@@ -10,7 +11,25 @@
 
 namespace {
 
-using ExportT = Napi::Value(const Napi::CallbackInfo &args);
+using export_t = Napi::Value(const Napi::CallbackInfo &args);
+
+#if _WIN32
+using string_t = std::wstring;
+
+constexpr int32_t size_multiplier = 2;
+#else
+using string_t = std::string;
+
+constexpr int32_t size_multiplier = 1;
+#endif
+
+constexpr string_t get_platform_string_value(Napi::String str) {
+#if _WIN32
+  return str.Utf16Value();
+#else
+  return str.Utf8Value();
+#endif
+}
 
 void export_init() { NFD_Init(); }
 
@@ -21,23 +40,24 @@ Napi::Value open_dialog(const Napi::CallbackInfo &args) {
 
   const auto js_filter_items = args[0].As<Napi::Object>();
 
-  std::vector<std::wstring> storage;
+  std::vector<string_t> storage;
   storage.reserve(
-      js_filter_items.GetPropertyNames().As<Napi::Array>().Length() * 2);
+      js_filter_items.GetPropertyNames().As<Napi::Array>().Length() *
+      size_multiplier);
 
   std::vector<nfdnfilteritem_t> filters;
-  filters.reserve(storage.capacity() / 2);
+  filters.reserve(storage.capacity() / size_multiplier);
 
   const auto keys = js_filter_items.GetPropertyNames();
   for (auto i = 0u; i < keys.Length(); ++i) {
     const auto key = keys.Get(i);
 
-    const auto key_u16 = key.As<Napi::String>().Utf16Value();
-    const auto val_u16 =
-        js_filter_items.Get(key).As<Napi::String>().Utf16Value();
+    const auto key_val = get_platform_string_value(key.As<Napi::String>());
+    const auto val_val =
+        get_platform_string_value(js_filter_items.Get(key).As<Napi::String>());
 
-    storage.emplace_back(std::wstring(key_u16.begin(), key_u16.end()));
-    storage.emplace_back(std::wstring(val_u16.begin(), val_u16.end()));
+    storage.emplace_back(string_t(key_val.begin(), key_val.end()));
+    storage.emplace_back(string_t(val_val.begin(), val_val.end()));
 
     const auto name_ptr = storage[storage.size() - 2].c_str();
     const auto spec_ptr = storage[storage.size() - 1].c_str();
@@ -49,7 +69,7 @@ Napi::Value open_dialog(const Napi::CallbackInfo &args) {
   const auto result = NFD::OpenDialog(out_path, filters.data(), filters.size());
   if (result == NFD_OKAY) {
     return Napi::String::From(env,
-                              reinterpret_cast<char16_t *>(out_path.get()));
+                              reinterpret_cast<nfdnchar_t *>(out_path.get()));
   } else if (result == NFD_CANCEL) {
     return Napi::String::From(env, "");
   } else {
@@ -65,7 +85,7 @@ Napi::Value open_folder_dialog(const Napi::CallbackInfo &args) {
   const auto result = NFD::PickFolder(out_path);
   if (result == NFD_OKAY) {
     return Napi::String::From(env,
-                              reinterpret_cast<char16_t *>(out_path.get()));
+                              reinterpret_cast<nfdnchar_t *>(out_path.get()));
   } else if (result == NFD_CANCEL) {
     return Napi::String::From(env, "");
   } else {
@@ -79,7 +99,7 @@ Napi::Value open_folder_dialog(const Napi::CallbackInfo &args) {
 Napi::Object register_exports(Napi::Env env, Napi::Object exports) {
   export_init();
 
-  const auto register_export = [&](std::string name, ExportT export_fn) {
+  const auto register_export = [&](std::string name, export_t export_fn) {
     exports.Set(Napi::String::New(env, name),
                 Napi::Function::New(env, export_fn));
   };
