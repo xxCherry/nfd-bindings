@@ -25,7 +25,9 @@ constexpr int32_t size_multiplier = 1;
 
 constexpr string_t get_platform_string_value(Napi::String str) {
 #if _WIN32
-  return str.Utf16Value();
+  const auto value = str.Utf16Value();
+
+  return std::wstring(value.begin(), value.end());
 #else
   return str.Utf8Value();
 #endif
