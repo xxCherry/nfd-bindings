@@ -15,10 +15,12 @@ using export_t = Napi::Value(const Napi::CallbackInfo &args);
 
 #if _WIN32
 using string_t = std::wstring;
+using pchar_t = char16_t;
 
 constexpr int32_t size_multiplier = 2;
 #else
 using string_t = std::string;
+using pchar_t = char;
 
 constexpr int32_t size_multiplier = 1;
 #endif
@@ -71,7 +73,7 @@ Napi::Value open_dialog(const Napi::CallbackInfo &args) {
   const auto result = NFD::OpenDialog(out_path, filters.data(), filters.size());
   if (result == NFD_OKAY) {
     return Napi::String::From(env,
-                              reinterpret_cast<nfdnchar_t *>(out_path.get()));
+                              reinterpret_cast<pchar_t *>(out_path.get()));
   } else if (result == NFD_CANCEL) {
     return Napi::String::From(env, "");
   } else {
@@ -87,7 +89,7 @@ Napi::Value open_folder_dialog(const Napi::CallbackInfo &args) {
   const auto result = NFD::PickFolder(out_path);
   if (result == NFD_OKAY) {
     return Napi::String::From(env,
-                              reinterpret_cast<nfdnchar_t *>(out_path.get()));
+                              reinterpret_cast<pchar_t *>(out_path.get()));
   } else if (result == NFD_CANCEL) {
     return Napi::String::From(env, "");
   } else {
