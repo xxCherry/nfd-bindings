@@ -23,7 +23,7 @@ using string_t = std::string;
 constexpr int32_t size_multiplier = 1;
 #endif
 
-constexpr string_t get_platform_string_value(Napi::String str) {
+string_t get_platform_string_value(Napi::String str) {
 #if _WIN32
   const auto value = str.Utf16Value();
 
